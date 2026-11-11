@@ -2,7 +2,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 
-const profiles = ['ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size'];
+const profiles = ['ac6-speed', 'gcc-speed', 'ac6-o3', 'gcc-o3', 'ac6-o2lto', 'gcc-o2lto',
+                  'ac6-o0', 'gcc-o0', 'ac6-size', 'gcc-size'];
 const algorithms = ['crc32', 'fir_i16', 'fir_f32'];
 const extendedAlgorithms = ['mul32', 'mul64', 'udivmod32', 'sdiv32', 'gcd32', 'matmul_i16'];
 const coremarkSeeds = { performance: 'e9f5', validation: '18f2' };
@@ -216,6 +217,12 @@ function generate(root, runDir, expectedRuns) {
     const imageNames = {
         'ac6-speed': 'AC6 速度档',
         'gcc-speed': 'GCC 速度档',
+        'ac6-o3': 'AC6 -O3',
+        'gcc-o3': 'GCC -O3',
+        'ac6-o2lto': 'AC6 -O2+flto',
+        'gcc-o2lto': 'GCC -O2+flto',
+        'ac6-o0': 'AC6 -O0',
+        'gcc-o0': 'GCC -O0',
         'ac6-size': 'AC6 体积档',
         'gcc-size': 'GCC 体积档'
     };

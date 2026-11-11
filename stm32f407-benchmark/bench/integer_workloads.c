@@ -7,12 +7,42 @@ static int16_t matrix_a[MATRIX_DIM * MATRIX_DIM], matrix_b[MATRIX_DIM * MATRIX_D
 static int32_t matrix_result[MATRIX_DIM * MATRIX_DIM];
 static uint64_t result;
 
-static void mul32_work(void) { result = mul32_kernel(a, b); }
-static void mul64_work(void) { result = mul64_kernel(a, b); }
-static void udivmod_work(void) { result = udivmod32_kernel(a, b); }
-static void sdiv_work(void) { result = sdiv32_kernel(signed_a, signed_b); }
-static void gcd_work(void) { result = gcd32_kernel(a, b); }
-static void matmul_work(void) { matmul_i16_kernel(matrix_a, matrix_b, matrix_result); }
+/* Memory barriers for the same reason as in bench/algorithms.c. */
+static void mul32_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    result = mul32_kernel(a, b);
+}
+
+static void mul64_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    result = mul64_kernel(a, b);
+}
+
+static void udivmod_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    result = udivmod32_kernel(a, b);
+}
+
+static void sdiv_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    result = sdiv32_kernel(signed_a, signed_b);
+}
+
+static void gcd_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    result = gcd32_kernel(a, b);
+}
+
+static void matmul_work(void)
+{
+    __asm__ volatile ("" ::: "memory");
+    matmul_i16_kernel(matrix_a, matrix_b, matrix_result);
+}
 
 /* Reference checksums were calculated with host arbitrary-precision integers. */
 static int mul32_valid(void) { return result == 0x9f75f7bau; }

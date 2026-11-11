@@ -2,7 +2,9 @@
 param(
     [ValidateSet('all', 'ac6', 'gcc')][string]$Toolchain = 'all',
     [string]$Ac6Bin = 'D:\Keil_v5\ARM\ARMCLANG\bin',
-    [string]$GccBin = $env:F407_GCC_BIN
+    [string]$GccBin = $env:F407_GCC_BIN,
+    # Empty = build every tier; names: speed, size, o0, o3, o2lto.
+    [string[]]$Tiers = @()
 )
 
 $ErrorActionPreference = 'Stop'
@@ -59,19 +61,51 @@ try {
             $flags = $cpu + @('-std=c99', '-ffreestanding', '-ffunction-sections',
                               '-fdata-sections', '-fno-lto', '-fno-fast-math', '-Wall', '-Wextra')
         }
-        foreach ($profile in @('speed', 'size')) {
-            $name = "$family-$profile"
+        # Tier names map to COMPILER_FLAGS strings in bench/coremark/core_portme.h
+        # via BENCH_TIER_* defines, avoiding PowerShell quoting of -D literals.
+        # $familyTiers, not $tiers: the parameter $Tiers would collide case-insensitively.
+        if ($family -eq 'ac6') {
+            $familyTiers = @(
+                @{ name = 'speed'; opt = @('-O2') }
+                @{ name = 'size';  opt = @('-Oz') }
+                @{ name = 'o0';    opt = @('-O0') }
+                @{ name = 'o3';    opt = @('-O3') }
+                @{ name = 'o2lto'; opt = @('-O2', '-flto') }
+            )
+        } else {
+            $familyTiers = @(
+                @{ name = 'speed'; opt = @('-O2') }
+                @{ name = 'size';  opt = @('-Os') }
+                @{ name = 'o0';    opt = @('-O0') }
+                @{ name = 'o3';    opt = @('-O3') }
+            )
+            # Windows-hosted Arm GNU releases ship no lto-wrapper, so -flto cannot link.
+            if (Test-Path (Join-Path $GccBin '..\libexec\gcc\arm-none-eabi\*\lto-wrapper.exe')) {
+                $familyTiers += @{ name = 'o2lto'; opt = @('-O2', '-flto') }
+            } else {
+                Write-Host 'Skipping gcc-o2lto: this Windows-hosted GNU toolchain has no lto-wrapper.'
+            }
+        }
+        if ($Tiers) {
+            foreach ($wanted in $Tiers) {
+                if ($wanted -notin @('speed', 'size', 'o0', 'o3', 'o2lto')) {
+                    throw "Unknown tier name $wanted"
+                }
+            }
+            $familyTiers = @($familyTiers | Where-Object { $Tiers -contains $_.name })
+        }
+        foreach ($tier in $familyTiers) {
+            $name = "$family-$($tier.name)"
             $output = "build/$name"
             New-Item -ItemType Directory -Path $output -Force | Out-Null
             Set-Content -LiteralPath "$output/commands.jsonl" -Value @() -Encoding utf8
             Set-Content -LiteralPath "$output/version.txt" -Value $version -Encoding utf8
-            $defines = @('-DSTM32F407xx')
-            if ($profile -eq 'size') { $defines += '-DBENCH_SIZE=1' }
+            $defines = @('-DSTM32F407xx', ('-DBENCH_TIER_' + $tier.name.ToUpperInvariant()))
             $buildSources = $sources
             if ($family -eq 'ac6') {
-                $opt = @($(if ($profile -eq 'size') { '-Oz' } else { '-O2' }))
+                $opt = $tier.opt
             } else {
-                $opt = @($(if ($profile -eq 'size') { '-Os' } else { '-O2' }))
+                $opt = $tier.opt
                 $buildSources += "$device/Source/Templates/system_stm32f4xx.c"
                 $defines += '-DHSE_VALUE=8000000u'
             }
@@ -90,21 +124,26 @@ try {
                 # armasm (legacy syntax) predates armclang and does not take --target.
                 Invoke-Compiler (Join-Path $Ac6Bin 'armasm.exe') (@('--cpu=Cortex-M4.fp', '--pd', '__MICROLIB SETA 1',
                     '-g', '-o', $startup, "$device/Source/Templates/arm/startup_stm32f407xx.s"))
-                Invoke-Compiler (Join-Path $Ac6Bin 'armlink.exe') (@('--cpu=Cortex-M4.fp', '--library_type=microlib',
+                $linkOpts = @('--cpu=Cortex-M4.fp', '--library_type=microlib',
                     '--scatter=startup/flash.sct', '--map', '--symbols', '--xref',
-                    '--info=sizes,totals,unused', "--list=$map", "--output=$elf", $startup) + $objects)
+                    '--info=sizes,totals,unused', "--list=$map", "--output=$elf", $startup)
+                if ($tier.name -eq 'o2lto') { $linkOpts = @('--lto') + $linkOpts }
+                Invoke-Compiler (Join-Path $Ac6Bin 'armlink.exe') ($linkOpts + $objects)
                 $fromelf = Join-Path $Ac6Bin 'fromelf.exe'
                 Invoke-Compiler $fromelf @('--bin', "--output=$bin", $elf)
                 Invoke-Compiler $fromelf @('--text', '-c', "--output=$asm", $elf)
             } else {
+                $linkLto = if ($tier.name -eq 'o2lto') { '-flto' } else { '-fno-lto' }
                 Invoke-Compiler $compiler ($cpu + @('-g', '-c', 'startup/startup_gcc.s', '-o', $startup))
-                Invoke-Compiler $compiler ($cpu + @('-nostdlib', '-fno-lto', '-T', 'startup/flash.ld',
+                Invoke-Compiler $compiler ($cpu + @('-nostdlib', $linkLto, '-T', 'startup/flash.ld',
                     "-Wl,--gc-sections,-Map=$map,--cref", '-o', $elf, $startup) + $objects + @('-lgcc'))
                 Invoke-Compiler (Join-Path $GccBin 'arm-none-eabi-objcopy.exe') @('-O', 'binary', $elf, $bin)
                 Invoke-Compiler (Join-Path $GccBin 'arm-none-eabi-objdump.exe') @('-d', $elf) |
                     Set-Content -LiteralPath $asm -Encoding ascii
             }
-            & node tools/verify-isa.cjs $asm "$output/isa.json"
+            # LTO inlines whole kernels, so check image-wide; -O0 records soft div helpers.
+            $isaMode = if ($tier.name -eq 'o0') { 'baseline' } elseif ($tier.name -eq 'o2lto') { 'global' } else { 'strict' }
+            & node tools/verify-isa.cjs $asm "$output/isa.json" $isaMode
             if ($LASTEXITCODE -ne 0) { throw "Hardware instruction check failed for $name" }
             Write-Host "Built $name"
         }

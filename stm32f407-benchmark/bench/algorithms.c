@@ -9,18 +9,27 @@ static float float_input[FIR_INPUTS], float_taps[FIR_TAPS];
 static float float_output[FIR_OUTPUTS];
 static uint32_t crc_result;
 
+/* The memory barriers make each wrapper a potential memory writer, so LTO
+   cannot prove the kernels pure and merge bench_measure's 32 identical calls
+   into one execution (armclang -O2 -flto did that to the CRC wrapper: the
+   batch then timed a single kernel run instead of 32). The barrier itself
+   emits no code. */
+
 static void crc_work(void)
 {
+    __asm__ volatile ("" ::: "memory");
     crc_result = crc32_ieee(crc_input);
 }
 
 static void int_work(void)
 {
+    __asm__ volatile ("" ::: "memory");
     fir_i16(int_input, int_taps, int_output);
 }
 
 static void float_work(void)
 {
+    __asm__ volatile ("" ::: "memory");
     fir_f32(float_input, float_taps, float_output);
 }
 

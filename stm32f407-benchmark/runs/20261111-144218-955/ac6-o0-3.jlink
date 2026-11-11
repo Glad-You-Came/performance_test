@@ -1,0 +1,8 @@
+r
+h
+loadfile "D:\develop\performance_test\stm32f407-benchmark\build\ac6-o0\ac6-o0.bin" 0x08000000 noreset
+verifybin "D:\develop\performance_test\stm32f407-benchmark\build\ac6-o0\ac6-o0.bin" 0x08000000
+r
+g
+sleep 600000
+q

@@ -3,10 +3,11 @@ param(
     [Parameter(Mandatory)][ValidatePattern('^COM[0-9]+$')][string]$Port,
     [string]$JLink = 'D:\SEGGER\JLink_V960\JLink.exe',
     [ValidatePattern('^[0-9]+$')][string]$ProbeSerial,
-    [ValidateSet('ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size')][string[]]$Images =
+    [ValidateSet('ac6-speed', 'gcc-speed', 'ac6-o3', 'gcc-o3', 'ac6-o2lto', 'gcc-o2lto',
+                 'ac6-o0', 'gcc-o0', 'ac6-size', 'gcc-size')][string[]]$Images =
         @('ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size'),
     [ValidateRange(1, 3)][int[]]$RunNumbers = @(1, 2, 3),
-    [ValidateRange(13000, 240000)][int]$HoldMilliseconds = 150000,
+    [ValidateRange(13000, 600000)][int]$HoldMilliseconds = 150000,
     [string]$OutputDir
 )
 

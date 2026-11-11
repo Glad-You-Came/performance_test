@@ -6,7 +6,13 @@
 #else
 #define TOOLCHAIN "gcc"
 #endif
-#ifdef BENCH_SIZE
+#if defined(BENCH_TIER_O0)
+#define PROFILE "o0"
+#elif defined(BENCH_TIER_O3)
+#define PROFILE "o3"
+#elif defined(BENCH_TIER_O2LTO)
+#define PROFILE "o2lto"
+#elif defined(BENCH_TIER_SIZE)
 #define PROFILE "size"
 #else
 #define PROFILE "speed"
