@@ -1,8 +1,8 @@
 #include "bench.h"
 #include "SYSTEM/sys/sys.h"
 
-#ifdef __CC_ARM
-#define TOOLCHAIN "armcc"
+#ifdef __ARMCC_VERSION
+#define TOOLCHAIN "ac6"
 #else
 #define TOOLCHAIN "gcc"
 #endif

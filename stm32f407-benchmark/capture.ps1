@@ -3,10 +3,10 @@ param(
     [Parameter(Mandatory)][ValidatePattern('^COM[0-9]+$')][string]$Port,
     [string]$JLink = 'D:\SEGGER\JLink_V960\JLink.exe',
     [ValidatePattern('^[0-9]+$')][string]$ProbeSerial,
-    [ValidateSet('armcc-speed', 'gcc-speed', 'armcc-size', 'gcc-size')][string[]]$Images =
-        @('armcc-speed', 'gcc-speed', 'armcc-size', 'gcc-size'),
+    [ValidateSet('ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size')][string[]]$Images =
+        @('ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size'),
     [ValidateRange(1, 3)][int[]]$RunNumbers = @(1, 2, 3),
-    [ValidateRange(13000, 240000)][int]$HoldMilliseconds = 90000,
+    [ValidateRange(13000, 240000)][int]$HoldMilliseconds = 150000,
     [string]$OutputDir
 )
 
@@ -30,8 +30,12 @@ function Start-Probe([string]$Name, [string[]]$Commands) {
     $options = '-Device STM32F407IG -If SWD -Speed 4000 -AutoConnect 1 -ExitOnError 1 -NoGui 1'
     if ($ProbeSerial) { $options += " -USB $ProbeSerial" }
     $options += " -CommandFile `"$scriptFile`""
-    Start-Process -FilePath $JLink -ArgumentList $options -WindowStyle Hidden -PassThru `
+    $process = Start-Process -FilePath $JLink -ArgumentList $options -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput $log -RedirectStandardError $errorLog
+    # Touching Handle caches it while the process is alive; otherwise ExitCode
+    # stays null after WaitForExit and Confirm-Probe would report a false failure.
+    $null = $process.Handle
+    $process
 }
 
 function Confirm-Probe([Diagnostics.Process]$Process, [string]$Name, [bool]$VerifyFlash) {
@@ -100,7 +104,7 @@ foreach ($image in $Images) {
         $serial = [IO.Ports.SerialPort]::new($Port, 115200, [IO.Ports.Parity]::None, 8, [IO.Ports.StopBits]::One)
         $probe = $null
         try {
-            $serial.ReadTimeout = 250
+            $serial.ReadTimeout = 3000
             $serial.ReadBufferSize = 65536
             $serial.Open()
             $serial.DiscardInBuffer()

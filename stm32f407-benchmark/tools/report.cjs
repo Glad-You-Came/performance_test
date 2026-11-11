@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 
-const profiles = ['armcc-speed', 'gcc-speed', 'armcc-size', 'gcc-size'];
+const profiles = ['ac6-speed', 'gcc-speed', 'ac6-size', 'gcc-size'];
 const algorithms = ['crc32', 'fir_i16', 'fir_f32'];
 const extendedAlgorithms = ['mul32', 'mul64', 'udivmod32', 'sdiv32', 'gcd32', 'matmul_i16'];
 const coremarkSeeds = { performance: 'e9f5', validation: '18f2' };
@@ -214,9 +214,9 @@ function show(stats, hz) {
 
 function generate(root, runDir, expectedRuns) {
     const imageNames = {
-        'armcc-speed': 'ARMCC 速度档',
+        'ac6-speed': 'AC6 速度档',
         'gcc-speed': 'GCC 速度档',
-        'armcc-size': 'ARMCC 体积档',
+        'ac6-size': 'AC6 体积档',
         'gcc-size': 'GCC 体积档'
     };
     const caseNames = {
@@ -228,7 +228,7 @@ function generate(root, runDir, expectedRuns) {
         tim2_dma: 'DMA 负载下的 TIM2 中断'
     };
     const lines = [
-        '# STM32F407IGT6 ARMCC 与 GCC 上板对比',
+        '# STM32F407IGT6 AC6 与 GCC 上板对比',
         '',
         '## 固件占用',
         '',
@@ -245,7 +245,7 @@ function generate(root, runDir, expectedRuns) {
         lines.push('| ' + [imageNames[image], size.flash, size.staticRam, size.stack, size.dmaBuffers, size.sampleBuffer].join(' | ') + ' |');
     }
     lines.push('', 'Flash 按烧录 BIN 的长度统计。静态 SRAM1 按地址跨度统计，包含对齐、栈和两类缓冲区。',
-        '', '## 算法耗时', '', '将有效轮次的样本合并统计。耗时按内核 168 MHz 换算，百分比为 GCC 相对同档 ARMCC 的耗时变化。',
+        '', '## 算法耗时', '', '将有效轮次的样本合并统计。耗时按内核 168 MHz 换算，百分比为 GCC 相对同档 AC6 的耗时变化。',
         '', '| 构建配置 | 测试项目 | 有效轮次 | 最小值 / 中位数（周期） | 最小值 / 中位数（µs） | GCC 耗时变化 |',
         '|---|---|---:|---:|---:|---:|');
     const runs = {};
@@ -258,7 +258,7 @@ function generate(root, runDir, expectedRuns) {
             const bin = path.join(root, 'build', image, image + '.bin');
             const hash = fs.existsSync(bin) && createHash('sha256').update(fs.readFileSync(bin)).digest('hex');
             if (hash !== fs.readFileSync(hashFile, 'ascii').trim().toLowerCase()) {
-                failures.push(imageNames[image] + ' 的采集固件哈希与当前构建不一致');
+                    failures.push(imageNames[image] + ' 的采集固件哈希与当前构建不一致');
                 algoStats[image] = {};
                 continue;
             }
@@ -291,7 +291,7 @@ function generate(root, runDir, expectedRuns) {
     }
     for (const image of profiles) {
         for (const [name, { count, stats }] of Object.entries(algoStats[image])) {
-            const baseline = image.startsWith('gcc') ? algoStats[image.replace('gcc', 'armcc')][name] : null;
+            const baseline = image.startsWith('gcc') ? algoStats[image.replace('gcc', 'ac6')][name] : null;
             const relative = baseline ? ((stats.median / baseline.stats.median - 1) * 100).toFixed(2) + '%' : '—';
             lines.push('| ' + [imageNames[image], caseNames[name], count,
                 stats.min.toFixed(2) + ' / ' + stats.median.toFixed(2),

@@ -15,12 +15,14 @@
 #define MEM_LOCATION "Flash code, SRAM1 data"
 #define align_mem(x) ((void *)(((uintptr_t)(x) + 3u) & ~(uintptr_t)3u))
 
-#ifdef __CC_ARM
-#define COMPILER_VERSION "ARMCC 5.06 update 7 build 960"
+#ifdef __ARMCC_VERSION
+#define F407_STR2(x) #x
+#define F407_STR(x) F407_STR2(x)
+#define COMPILER_VERSION "ArmClang " F407_STR(__ARMCC_VERSION)
 #ifdef BENCH_SIZE
-#define COMPILER_FLAGS "-O2 -Ospace Cortex-M4.fp Thumb hard-float"
+#define COMPILER_FLAGS "-Oz Cortex-M4 Thumb FPv4-SP-D16 hard-float"
 #else
-#define COMPILER_FLAGS "-O2 -Otime Cortex-M4.fp Thumb hard-float"
+#define COMPILER_FLAGS "-O2 Cortex-M4 Thumb FPv4-SP-D16 hard-float"
 #endif
 #else
 #define COMPILER_VERSION "GCC " __VERSION__

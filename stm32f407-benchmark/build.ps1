@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('all', 'armcc', 'gcc')][string]$Toolchain = 'all',
-    [string]$ArmBin = 'D:\Keil_v5\ARM\ARM_Compiler_5.06u7\bin',
+    [ValidateSet('all', 'ac6', 'gcc')][string]$Toolchain = 'all',
+    [string]$Ac6Bin = 'D:\Keil_v5\ARM\ARMCLANG\bin',
     [string]$GccBin = $env:F407_GCC_BIN
 )
 
@@ -35,17 +35,19 @@ try {
             if ($onPath) { $GccBin = Split-Path $onPath.Source }
         }
     }
-    foreach ($family in @('armcc', 'gcc')) {
+    foreach ($family in @('ac6', 'gcc')) {
         if ($Toolchain -ne 'all' -and $Toolchain -ne $family) { continue }
-        if ($family -eq 'armcc') {
-            $compiler = Join-Path $ArmBin 'armcc.exe'
-            $version = & $compiler --vsn
-            if ($LASTEXITCODE -ne 0 -or ($version -join ' ') -notmatch '5\.06 update 7 \(build 960\)') {
-                throw 'Expected ARMCC 5.06 update 7 build 960.'
+        if ($family -eq 'ac6') {
+            $compiler = Join-Path $Ac6Bin 'armclang.exe'
+            $version = & $compiler --version
+            if ($LASTEXITCODE -ne 0 -or ($version -join ' ') -notmatch 'Arm Compiler.*6\.\d+') {
+                throw 'Expected Arm Compiler for Embedded 6.x.'
             }
-            $cpu = @('--cpu=Cortex-M4.fp', '--apcs=/hardfp')
-            $flags = $cpu + @('--thumb', '--c99', '--split_sections',
-                              '--fpmode=std', '--library_type=microlib')
+            # -ffp-contract=off matches GCC -std=c99 and the former armcc --fpmode=std.
+            $cpu = @('--target=arm-arm-none-eabi', '-mcpu=cortex-m4', '-mthumb',
+                     '-mfpu=fpv4-sp-d16', '-mfloat-abi=hard')
+            $flags = $cpu + @('-std=c99', '-ffreestanding', '-ffunction-sections',
+                              '-fdata-sections', '-ffp-contract=off', '-Wall')
         } else {
             if (!$GccBin) { throw 'Set -GccBin or F407_GCC_BIN to the Arm GNU Toolchain 14.3.Rel1 bin directory.' }
             $compiler = Join-Path $GccBin 'arm-none-eabi-gcc.exe'
@@ -66,8 +68,8 @@ try {
             $defines = @('-DSTM32F407xx')
             if ($profile -eq 'size') { $defines += '-DBENCH_SIZE=1' }
             $buildSources = $sources
-            if ($family -eq 'armcc') {
-                $opt = @('-O2', $(if ($profile -eq 'size') { '-Ospace' } else { '-Otime' }))
+            if ($family -eq 'ac6') {
+                $opt = @($(if ($profile -eq 'size') { '-Oz' } else { '-O2' }))
             } else {
                 $opt = @($(if ($profile -eq 'size') { '-Os' } else { '-O2' }))
                 $buildSources += "$device/Source/Templates/system_stm32f4xx.c"
@@ -84,13 +86,14 @@ try {
             $bin = "$output/$name.bin"
             $map = "$output/$name.map"
             $asm = "$output/$name.asm"
-            if ($family -eq 'armcc') {
-                Invoke-Compiler (Join-Path $ArmBin 'armasm.exe') ($cpu + @('--pd', '__MICROLIB SETA 1',
+            if ($family -eq 'ac6') {
+                # armasm (legacy syntax) predates armclang and does not take --target.
+                Invoke-Compiler (Join-Path $Ac6Bin 'armasm.exe') (@('--cpu=Cortex-M4.fp', '--pd', '__MICROLIB SETA 1',
                     '-g', '-o', $startup, "$device/Source/Templates/arm/startup_stm32f407xx.s"))
-                Invoke-Compiler (Join-Path $ArmBin 'armlink.exe') (@('--cpu=Cortex-M4.fp', '--library_type=microlib',
-                    '--strict', '--scatter=startup/flash.sct', '--map', '--symbols', '--xref',
+                Invoke-Compiler (Join-Path $Ac6Bin 'armlink.exe') (@('--cpu=Cortex-M4.fp', '--library_type=microlib',
+                    '--scatter=startup/flash.sct', '--map', '--symbols', '--xref',
                     '--info=sizes,totals,unused', "--list=$map", "--output=$elf", $startup) + $objects)
-                $fromelf = Join-Path $ArmBin 'fromelf.exe'
+                $fromelf = Join-Path $Ac6Bin 'fromelf.exe'
                 Invoke-Compiler $fromelf @('--bin', "--output=$bin", $elf)
                 Invoke-Compiler $fromelf @('--text', '-c', "--output=$asm", $elf)
             } else {

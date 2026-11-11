@@ -1,6 +1,8 @@
 /.tools/
-/build/
-/runs/
+/build/*
+!/build/comparison.md
+/runs/*
+!/runs/20261111-144218-955/
 /Output/
 *.uvoptx
 *.uvguix.*

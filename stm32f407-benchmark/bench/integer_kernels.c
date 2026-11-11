@@ -1,11 +1,7 @@
 #include "integer_kernels.h"
 
-#if defined(__CC_ARM)
-#if !__TARGET_FEATURE_DIVIDE || !__TARGET_FEATURE_DSPMUL
-#error ARMCC must target hardware integer division and DSP multiplication.
-#endif
-#elif !__ARM_FEATURE_IDIV || !__ARM_FEATURE_DSP
-#error GCC must target hardware integer division and DSP multiplication.
+#if !__ARM_FEATURE_IDIV || !__ARM_FEATURE_DSP
+#error The compiler must target hardware integer division and DSP multiplication.
 #endif
 
 uint32_t mul32_kernel(const uint32_t *a, const uint32_t *b)
