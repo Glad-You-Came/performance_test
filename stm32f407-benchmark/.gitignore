@@ -1,0 +1,6 @@
+/.tools/
+/build/
+/runs/
+/Output/
+*.uvoptx
+*.uvguix.*

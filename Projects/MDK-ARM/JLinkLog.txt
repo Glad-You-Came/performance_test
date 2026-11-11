@@ -1,0 +1,149 @@
+T8ECC 002:329.908   SEGGER J-Link V9.60 Log File
+T8ECC 002:329.956   DLL Compiled: Jul 15 2026 14:37:57
+T8ECC 002:329.963   Logging started @ 2026-11-11 04:18
+T8ECC 002:329.970   Process: D:\Keil_v5\UV4\UV4.exe
+T8ECC 002:329.977 - 14.676ms 
+T8ECC 002:329.985 JLINK_SetWarnOutHandler(...)
+T8ECC 002:329.991 - 0.006ms 
+T8ECC 002:329.998 JLINK_OpenEx(...)
+T8ECC 002:332.232   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T8ECC 002:334.085   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T8ECC 002:334.178   Decompressing FW timestamp took 70 us
+T8ECC 002:341.855   Hardware: V9.60
+T8ECC 002:341.895   S/N: 69613976
+T8ECC 002:341.913   OEM: SEGGER
+T8ECC 002:341.932   Feature(s): GDB, RDI, FlashBP, FlashDL, JFlash
+T8ECC 002:343.668   Bootloader: (FW returned invalid version)
+T8ECC 002:345.636   TELNET listener socket opened on port 19021
+T8ECC 002:348.275   WEBSRV WEBSRV_Init(): Starting webserver thread(s)
+T8ECC 002:348.392   WEBSRV Webserver running on local port 19080
+T8ECC 002:348.524   Looking for J-Link GUI Server exe at: D:\Keil_v5\ARM\Segger\JLinkGUIServer.exe
+T8ECC 002:348.545   Looking for J-Link GUI Server exe at: D:\SEGGER\JLink_V960\JLinkGUIServer.exe
+T8ECC 002:348.556   Forking J-Link GUI Server: D:\SEGGER\JLink_V960\JLinkGUIServer.exe
+T8ECC 002:354.658   J-Link GUI Server info: "J-Link GUI server V9.60 "
+T8ECC 002:354.901 - 24.902ms returns "O.K."
+T8ECC 002:354.924 JLINK_GetEmuCaps()
+T8ECC 002:354.931 - 0.006ms returns 0xB9FF7BBF
+T8ECC 002:354.939 JLINK_TIF_GetAvailable(...)
+T8ECC 002:355.375 - 0.436ms 
+T8ECC 002:355.386 JLINK_SetErrorOutHandler(...)
+T8ECC 002:355.392 - 0.006ms 
+T8ECC 002:355.405 JLINK_ExecCommand("ProjectFile = "D:\develop\performance_test\Projects\MDK-ARM\JLinkSettings.ini"", ...). 
+T8ECC 002:356.728 - 1.323ms returns 0x00
+T8ECC 002:356.752 JLINK_ExecCommand("Device = STM32F407IGTx", ...). 
+T8ECC 002:356.910   Flash bank @ 0x08000000: SFL: Parsing sectorization info from ELF file
+T8ECC 002:356.922     FlashDevice.SectorInfo[0]: .SectorSize = 0x00004000, .SectorStartAddr = 0x08000000
+T8ECC 002:356.931     FlashDevice.SectorInfo[1]: .SectorSize = 0x00010000, .SectorStartAddr = 0x08010000
+T8ECC 002:356.941     FlashDevice.SectorInfo[2]: .SectorSize = 0x000D0000, .SectorStartAddr = 0x08020000
+T8ECC 002:356.952   FlashBank @0x08000000: Sectorization info from SFL ELF file ignored because sectorization override from DLL / XML file is active.
+T8ECC 002:357.108   Flash bank @ 0x08000000: SFL: Parsing sectorization info from ELF file
+T8ECC 002:357.120     FlashDevice.SectorInfo[0]: .SectorSize = 0x00004000, .SectorStartAddr = 0x08000000
+T8ECC 002:357.130     FlashDevice.SectorInfo[1]: .SectorSize = 0x00010000, .SectorStartAddr = 0x08010000
+T8ECC 002:357.140     FlashDevice.SectorInfo[2]: .SectorSize = 0x000D0000, .SectorStartAddr = 0x08020000
+T8ECC 002:357.150   FlashBank @0x1FFF7800: Sectorization info from SFL ELF file ignored because sectorization override from DLL / XML file is active.
+T8ECC 002:357.170   Device "STM32F407IG" selected.
+T8ECC 002:357.415 - 0.662ms returns 0x00
+T8ECC 002:357.428   ERROR: Unknown command
+T8ECC 002:357.438 JLINK_GetHardwareVersion()
+T8ECC 002:357.445 - 0.006ms returns 96000
+T8ECC 002:357.452 JLINK_GetDLLVersion()
+T8ECC 002:357.458 - 0.006ms returns 96000
+T8ECC 002:357.464 JLINK_GetOEMString(...)
+T8ECC 002:357.472 JLINK_GetFirmwareString(...)
+T8ECC 002:357.478 - 0.006ms 
+T8ECC 002:357.487 JLINK_GetDLLVersion()
+T8ECC 002:357.493 - 0.006ms returns 96000
+T8ECC 002:357.500 JLINK_GetCompileDateTime()
+T8ECC 002:357.506 - 0.006ms 
+T8ECC 002:357.513 JLINK_GetFirmwareString(...)
+T8ECC 002:357.519 - 0.006ms 
+T8ECC 002:357.526 JLINK_GetHardwareVersion()
+T8ECC 002:357.532 - 0.006ms returns 96000
+T8ECC 002:357.539 JLINK_GetSN()
+T8ECC 002:357.546 - 0.006ms returns 69613976
+T8ECC 002:357.553 JLINK_GetOEMString(...)
+T8ECC 002:357.561 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T8ECC 002:359.830 - 2.268ms returns 0x00
+T8ECC 002:359.847 JLINK_HasError()
+T8ECC 002:359.857 JLINK_SetSpeed(5000)
+T8ECC 002:360.368 - 0.511ms 
+T8ECC 002:360.618 JLINK_HasError()
+T8ECC 002:360.673 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T8ECC 002:360.679 - 0.006ms returns JLINKARM_RESET_TYPE_NORMAL
+T8ECC 002:360.686 JLINK_Reset()
+T8ECC 002:361.074   InitTarget() start
+T8ECC 002:361.084    J-Link Script File: Executing InitTarget()
+T8ECC 002:361.683   SWD selected. Executing JTAG -> SWD switching sequence.
+T8ECC 002:365.391   DAP initialized successfully.
+T8ECC 002:378.789   InitTarget() end - Took 17.7ms
+T8ECC 002:380.193   Found SW-DP with ID 0x2BA01477
+T8ECC 002:384.446   DPIDR: 0x2BA01477
+T8ECC 002:384.467   CoreSight SoC-400 or earlier
+T8ECC 002:384.482   Scanning AP map to find all available APs
+T8ECC 002:385.815   AP[1]: Stopped AP scan as end of AP map has been reached
+T8ECC 002:385.846   AP[0]: AHB-AP (IDR: 0x24770011, ADDR: 0x00000000)
+T8ECC 002:385.862   Iterating through AP map to find AHB-AP to use
+T8ECC 002:387.173   AP[0]: Core found
+T8ECC 002:387.192   AP[0]: AHB-AP ROM base: 0xE00FF000
+T8ECC 002:388.141   CPUID register: 0x410FC241. Implementer code: 0x41 (ARM)
+T8ECC 002:388.159   Found Cortex-M4 r0p1, Little endian.
+T8ECC 002:389.170   -- Max. mem block: 0x00010C40
+T8ECC 002:390.397   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T8ECC 002:391.102   CPU_ReadMem(4 bytes @ 0xE0002000)
+T8ECC 002:391.705   FPUnit: 6 code (BP) slots and 2 literal slots
+T8ECC 002:391.725   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T8ECC 002:392.310   CPU_ReadMem(4 bytes @ 0xE0001000)
+T8ECC 002:392.942   CPU_WriteMem(4 bytes @ 0xE0001000)
+T8ECC 002:393.541   CPU_ReadMem(4 bytes @ 0xE000ED88)
+T8ECC 002:394.159   CPU_WriteMem(4 bytes @ 0xE000ED88)
+T8ECC 002:394.718   CPU_ReadMem(4 bytes @ 0xE000ED88)
+T8ECC 002:395.357   CPU_WriteMem(4 bytes @ 0xE000ED88)
+T8ECC 002:395.979   CoreSight components:
+T8ECC 002:395.989   ROMTbl[0] @ E00FF000
+T8ECC 002:395.998   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T8ECC 002:396.829   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T8ECC 002:397.714   [0][0]: E000E000 CID B105E00D PID 000BB00C SCS-M7
+T8ECC 002:397.724   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T8ECC 002:398.327   [0][1]: E0001000 CID B105E00D PID 003BB002 DWT
+T8ECC 002:398.348   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T8ECC 002:398.925   [0][2]: E0002000 CID B105E00D PID 002BB003 FPB
+T8ECC 002:398.944   CPU_ReadMem(32 bytes @ 0xE0000FE0)
+T8ECC 002:399.572   [0][3]: E0000000 CID B105E00D PID 003BB001 ITM
+T8ECC 002:399.582   CPU_ReadMem(32 bytes @ 0xE0040FE0)
+T8ECC 002:400.195   [0][4]: E0040000 CID B105900D PID 000BB9A1 TPIU
+T8ECC 002:400.214   CPU_ReadMem(32 bytes @ 0xE0041FE0)
+T8ECC 002:401.201   [0][5]: E0041000 CID B105900D PID 000BB925 ETM
+T8ECC 002:401.266   JLINK_GetResetTypeDesc
+T8ECC 002:401.276   - 0.009ms 
+T8ECC 002:401.287   Reset type: NORMAL (https://kb.segger.com/J-Link_Reset_Strategies)
+T8ECC 002:401.298   CPU is running
+T8ECC 002:401.312   CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T8ECC 002:402.083   CPU is running
+T8ECC 002:402.102   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T8ECC 002:402.694   Reset: Halt core after reset via DEMCR.VC_CORERESET.
+T8ECC 002:403.838   Reset: Reset device via AIRCR.SYSRESETREQ.
+T8ECC 002:403.858   CPU is running
+T8ECC 002:403.869   CPU_WriteMem(4 bytes @ 0xE000ED0C)
+T8ECC 002:459.377   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T8ECC 002:459.995   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T8ECC 002:463.174   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T8ECC 002:469.679   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T8ECC 002:473.049   CPU_WriteMem(4 bytes @ 0xE0002000)
+T8ECC 002:473.540   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T8ECC 002:474.097   CPU_ReadMem(4 bytes @ 0xE0001000)
+T8ECC 002:474.720 - 114.033ms 
+T8ECC 002:474.747 JLINK_GetId()
+T8ECC 002:475.394 - 0.646ms returns 0x2BA01477
+T8ECC 002:476.988 JLINK_GetFirmwareString(...)
+T8ECC 002:477.006 - 0.017ms 
+T8ECC 004:067.428 JLINK_Close()
+T8ECC 004:067.938   OnDisconnectTarget() start
+T8ECC 004:067.961    J-Link Script File: Executing OnDisconnectTarget()
+T8ECC 004:067.985   CPU_WriteMem(4 bytes @ 0xE0042004)
+T8ECC 004:068.604   CPU_WriteMem(4 bytes @ 0xE0042008)
+T8ECC 004:069.306   OnDisconnectTarget() end - Took 1.34ms
+T8ECC 004:069.335   CPU_ReadMem(4 bytes @ 0xE0001000)
+T8ECC 004:069.814   CPU_WriteMem(4 bytes @ 0xE0001004)
+T8ECC 004:095.744 - 28.316ms
+T8ECC 004:095.762   
+T8ECC 004:095.768   Closed
